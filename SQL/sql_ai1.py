@@ -3,6 +3,10 @@ import pyodbc
 import pandas as pd 
 import ollama
 
+import warnings
+
+#warnings.filterwarnings('ignore', category=UserWarning, module='pandas.io.sql')
+
 # --------------SQL Server Config ---------------
 server = 'localhost'
 database = 'AdventureWorks2022'
@@ -53,7 +57,7 @@ if __name__ == "__main__":
 
     sql = nl_to_sql(question, table_context)
     sql = sql.replace("`", "")
-    
+
     print("Generated SQL:\n", sql)
 
     try:
