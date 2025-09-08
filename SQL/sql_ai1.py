@@ -40,7 +40,7 @@ def nl_to_sql(question, table_context=None):
 # ==========FUNCTION TO RUN QUERY==========
 def run_query(sql):
     """Run SQL query and retrun as pandas dataframe"""
-    df = read_sql(sql, conn)
+    df = pd.read_sql(sql, conn)
     return df
 
 # ==========EXAMPLE USAGE==========
@@ -49,9 +49,11 @@ if __name__ == "__main__":
     question = "Show me the top 5 customers by total sales in 2014."
 
     # (Optional) provide schema/table names for better sql generation
-    table_context = "Sales.SalesOrderHeader(SalesOrderID, CustomerID, OrderDate, TotalDue), Sales.Customer(CustomerID, PersonID), Person.Person(PersonID, FirstName, LastName)"
+    table_context = "Sales.vwSalesOrder(SalesOrderID, CustomerID, OrderDate, TotalDue, FirstName, LastName)"
 
     sql = nl_to_sql(question, table_context)
+    sql = sql.replace("`", "")
+    
     print("Generated SQL:\n", sql)
 
     try:
