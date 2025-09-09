@@ -28,7 +28,7 @@ conn = pyodbc.connect(conn_str)
 def ask_ollama(prompt, model="llama3"):
     """Send a prompt to Ollama and return response text."""
     response = ollama.chat(model=model, messages=[{"role": "user", "content": prompt}])
-    return response["message"]["content"].strip()
+    return response["message"]["content"].strip().replace("`","")
 
 def generate_sql(question, schema_context=None):
     """Ask Ollama to generate T-SQL from natural language"""
@@ -74,7 +74,7 @@ def explain_results(question, df):
     return ask_ollama(prompt)
 
 # ========== MAIN AGENT FUNCTION ##########
-def agent_query(question, schema_context=None, retries=2):
+def agent_query(question, schema_context=None, retries=5):
 
     sql = generate_sql(question, schema_context)
     for attempt in range(retries):
