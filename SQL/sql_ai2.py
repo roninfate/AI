@@ -73,4 +73,34 @@ def explain_results(question, df):
 
     return ask_ollama(prompt)
 
-    
+# ========== MAIN AGENT FUNCTION ##########
+def agent_query(question, schema_context=None, retries=2):
+
+    sql = generate_sql(question, schema_context)
+    for attempt in range(retries):
+        try:
+            df = pd.read_sql(sql, conn)
+            explanation = explain_results(question, df)
+            return sql, df, explanation
+        except Exception as e:
+            print(f"SQL failed (attempt {attempt+1}): {e}")
+            sql = fix_sql(str(e), sql, schema_context)
+    raise RuntimeError("Query failed after retries.")
+
+# ========== EXAMPLE USAGE ##########
+if __name__ == "__main__":
+    # Natural language question
+    question = "Show me the top 5 customers by total sales in 2014"
+
+    # Optionalschema hint
+    schema_context = """
+    Sales.vwSalesOrder(SalesOrderID, CustomerID, OrderDate, TotalDue, FirstName, LastName)
+    """
+
+    sql, df, explanation = agent_query(question, schema_context)
+
+    print("\nGenerated SQL:\n", sql)
+    print("\nQuery Results:\n")
+    print(df.head())
+    print("\nAI Explanation:\n", explanation)
+
