@@ -9,7 +9,7 @@ import warnings
 
 # --------------SQL Server Config ---------------
 server = 'localhost'
-database = 'AdventureWorks2022'
+database = 'AITest'
 username = 'python'
 password = 'Trustno1@all'
 driver = '{ODBC Driver 17 for SQL Server}'

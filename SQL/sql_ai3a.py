@@ -1,19 +1,14 @@
-import os
 import pyodbc
-import pandas as pd 
+import pandas as pd
 import ollama
 import sys
 
-import warnings
-
-#warnings.filterwarnings('ignore', category=UserWarning, module='pandas.io.sql')
-
-# --------------SQL Server Config ---------------
-server = 'localhost'
-database = 'AITest'
-username = 'python'
-password = 'Trustno1@all'
-driver = '{ODBC Driver 17 for SQL Server}'
+# ========= SQL SERVER CONFIG =========
+server = "localhost"
+database = "AdventureWorks2022"
+username = "python"
+password = "Trustno1@all"
+driver = "{ODBC Driver 17 for SQL Server}"
 
 conn_str = f"""
 DRIVER={driver};
@@ -22,7 +17,6 @@ DATABASE={database};
 UID={username};
 PWD={password};
 """
-
 conn = pyodbc.connect(conn_str)
 
 # ========= CHAT + SCHEMA MEMORY =========
@@ -46,7 +40,7 @@ def stream_ollama(prompt, role="user", model="llama3"):
     print()  # newline at end
     chat_history.append({"role": role, "content": prompt})
     chat_history.append({"role": "assistant", "content": reply})
-    return reply.strip().replace("`", "")
+    return reply.strip()
 
 # ========= SCHEMA DISCOVERY =========
 def get_schema(table_name=None):
@@ -59,20 +53,20 @@ def get_schema(table_name=None):
     cursor = conn.cursor()
     if table_name:
         query = f"""
-        SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE
+        SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, TABLE_SCHEMA
         FROM INFORMATION_SCHEMA.COLUMNS
         WHERE TABLE_NAME = '{table_name}'
         ORDER BY ORDINAL_POSITION
         """
     else:
         query = """
-        SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE
+        SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, TABLE_SCHEMA
         FROM INFORMATION_SCHEMA.COLUMNS
         ORDER BY TABLE_NAME, ORDINAL_POSITION
         """
 
-    rows = [tuple(row) for row in cursor.execute(query).fetchall()]
-    df = pd.DataFrame(rows, columns=["Schema", "Table", "Column", "Type"])
+    rows = cursor.execute(query).fetchall()
+    df = pd.DataFrame(rows, columns=["Table", "Column", "Type"])
 
     for t in df["Table"].unique():
         schema_cache[t] = df[df["Table"] == t].to_dict(orient="records")
@@ -171,4 +165,3 @@ if __name__ == "__main__":
             print("\n📝 AI Explanation:\n", explanation)
         except Exception as e:
             print("❌ Query failed:", e)
-
