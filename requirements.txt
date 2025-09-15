@@ -3,3 +3,5 @@ langchain-ollama
 langchain-chroma
 pandas
 pyodbc
+sqlalchemy 
+google-generativeai

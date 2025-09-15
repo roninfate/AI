@@ -25,7 +25,7 @@ PWD={password};
 conn = pyodbc.connect(conn_str)
 
 # ==========OLLAMA HELPERS==========
-def ask_ollama(prompt, model="llama3"):
+def ask_ollama(prompt, model="sqlcoder"):
     """Send a prompt to Ollama and return response text."""
     response = ollama.chat(model=model, messages=[{"role": "user", "content": prompt}])
     return response["message"]["content"].strip().replace("`","")
