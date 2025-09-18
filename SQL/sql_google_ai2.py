@@ -130,53 +130,69 @@ def execute_sql_query(connection_string, query):
     except Exception as e:
         return None, f"Error executing the query: {e}"
 
-def sql_agent(user_question, server_connection_str, gemini_api_key):
+def interactive_sql_agent(server_connection_str, gemini_api_key):
     """
-    Main function for the agentic AI.
+    Runs the agentic AI in an interactive loop, prompting the user for questions.
     
     Args:
-        user_question (str): The natural language question.
         server_connection_str (str): The SQL Server connection string.
         gemini_api_key (str): Your Gemini API key.
-    
-    Returns:
-        str: The result of the query or an error message.
     """
-    print("1. Perceiving the database schema...")
-    print(server_connection_str)
-
+    print("Welcome to the Interactive SQL Agent!")
+    print("Type 'exit' or 'quit' to end the session.")
+    
+    # Introspect the database once at the beginning
+    print("\nPerceiving the database schema...")
     schema = get_schema_info(server_connection_str)
     
     if "Error" in schema:
-        return schema
+        print(f"Failed to load database schema: {schema}")
+        return
         
-    print("2. Generating a SQL query with Gemini...")
-    query = generate_sql_query(user_question, schema, gemini_api_key)
+    print("Schema loaded successfully. Ready to answer your questions.")
     
-    if "Error" in query:
-        return query
+    while True:
+        user_question = input("\nYour question (or 'exit'/'quit'): ").strip()
         
-    print(f"Generated Query: \n{query}")
-    
-    print("3. Executing the query...")
-    results, error = execute_sql_query(server_connection_str, query)
-    
-    if error:
-        # Here you could implement a more sophisticated agentic loop
-        # by sending the error back to Gemini for correction.
-        # For simplicity, we'll just return the error.
-        return f"Query failed. Reason: {error}"
-    else:
-        return f"Query successful. Results:\n{results}"
+        # Check for exit command
+        if user_question.lower() in ['exit', 'quit']:
+            print("Exiting session. Goodbye!")
+            break
+            
+        if not user_question:
+            continue
+            
+        print("Generating a SQL query with Gemini...")
+        query = generate_sql_query(user_question, schema, gemini_api_key)
+        
+        if "Error" in query:
+            print(f"Query generation failed. Reason: {query}")
+            continue
+            
+        print(f"\nGenerated Query: \n{query}")
+        
+        print("\nExecuting the query...")
+        results, error = execute_sql_query(server_connection_str, query)
+        
+        if error:
+            print(f"Query failed. Reason: {error}")
+        else:
+            print(f"\nQuery successful. Results:\n{results}")
 
 # --- To use the agent ---
+# my_api_key = 'AIzaSyDMt2oRAXpEDV-Hip4wjCNfcinq7dsJNo4'
+# my_connection_string = "mssql+pyodbc://python:Trustno1%40all@localhost/Northwind?driver=ODBC+Driver+17+For+SQL+Server"
+
+# #question = "How many customers are in the Customers table?"
+# question = "What are my top 10 customers for total sales in 1998 and parse json into rows."
+
+# final_result = sql_agent(question, my_connection_string, my_api_key)
+# --- To use the interactive agent ---
 my_api_key = 'AIzaSyDMt2oRAXpEDV-Hip4wjCNfcinq7dsJNo4'
 my_connection_string = "mssql+pyodbc://python:Trustno1%40all@localhost/Northwind?driver=ODBC+Driver+17+For+SQL+Server"
 
-#question = "How many customers are in the Customers table?"
-question = "What are my top 10 customers for sales in 1998 and parse json into rows."
+interactive_sql_agent(my_connection_string, my_api_key)
 
-final_result = sql_agent(question, my_connection_string, my_api_key)
-print("\n--- Final Result ---")
-print(final_result)
+# print("\n--- Final Result ---")
+# print(final_result)
 
