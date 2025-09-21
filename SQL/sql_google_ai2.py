@@ -1,6 +1,7 @@
 import sqlalchemy
 import pyodbc
 import google.generativeai as genai
+import os
 
 def get_schema_info(connection_string):
     """
@@ -38,10 +39,6 @@ def get_schema_info(connection_string):
         return schema_info
     except Exception as e:
         return f"Error introspecting the database: {e}"
-
-# Example connection string for SQL Server with pyodbc
-# This assumes you have the appropriate ODBC driver installed
-connection_str = "mssql+pyodbc://python:Trustno1%40all@localhost/Northwind?driver=ODBC+Driver+17+For+SQL+Server"
 
 def generate_sql_query(user_question, schema_info, api_key):
     """
@@ -180,16 +177,22 @@ def interactive_sql_agent(server_connection_str, gemini_api_key):
             print(f"\nQuery successful. Results:\n{results}")
 
 # --- To use the agent ---
-# my_api_key = 'AIzaSyDMt2oRAXpEDV-Hip4wjCNfcinq7dsJNo4'
-# my_connection_string = "mssql+pyodbc://python:Trustno1%40all@localhost/Northwind?driver=ODBC+Driver+17+For+SQL+Server"
 
 # #question = "How many customers are in the Customers table?"
 # question = "What are my top 10 customers for total sales in 1998 and parse json into rows."
 
 # final_result = sql_agent(question, my_connection_string, my_api_key)
 # --- To use the interactive agent ---
-my_api_key = 'AIzaSyDMt2oRAXpEDV-Hip4wjCNfcinq7dsJNo4'
-my_connection_string = "mssql+pyodbc://python:Trustno1%40all@localhost/Northwind?driver=ODBC+Driver+17+For+SQL+Server"
+database = input("Enter database name:")
+my_api_key=os.environment["AI_API_KEY"]
+sqllogin = os.environment["SQLLOGIN"]
+sqlpwd = os.environment["SQLPWD"]
+
+# Example connection string for SQL Server with pyodbc
+# This assumes you have the appropriate ODBC driver installed
+connection_str = f"mssql+pyodbc://{sqllogin}:{sqlpwd}/{database}?driver=ODBC+Driver+17+For+SQL+Server"
+
+my_connection_string = f"mssql+pyodbc://{sqllogin}:{sqlpwd}/{database}?driver=ODBC+Driver+17+For+SQL+Server"
 
 interactive_sql_agent(my_connection_string, my_api_key)
 
