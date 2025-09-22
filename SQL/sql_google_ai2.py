@@ -52,7 +52,7 @@ def generate_sql_query(user_question, schema_info, api_key):
     Returns:
         str: The generated SQL query.
     """
-    print("In generate_sql_query")
+    # print("In generate_sql_query")
 
     genai.configure(api_key=api_key)
     
@@ -90,7 +90,7 @@ def execute_sql_query(connection_string, query):
     Returns:
         tuple: A tuple containing the formatted results and any errors.
     """
-    print("In execute_sql_query")
+    # print("In execute_sql_query")
     query = query.replace('`', '').replace('sql','')
     try:
         engine = sqlalchemy.create_engine(connection_string)
@@ -183,16 +183,17 @@ def interactive_sql_agent(server_connection_str, gemini_api_key):
 
 # final_result = sql_agent(question, my_connection_string, my_api_key)
 # --- To use the interactive agent ---
+sqlserver = input("Enter SQL Server name:")
 database = input("Enter database name:")
-my_api_key=os.environment["AI_API_KEY"]
-sqllogin = os.environment["SQLLOGIN"]
-sqlpwd = os.environment["SQLPWD"]
+my_api_key=os.environ["AI_API_KEY"]
+sqllogin = os.environ["SQLLOGIN"]
+sqlpwd = os.environ["SQLPWD"]
 
 # Example connection string for SQL Server with pyodbc
 # This assumes you have the appropriate ODBC driver installed
-connection_str = f"mssql+pyodbc://{sqllogin}:{sqlpwd}/{database}?driver=ODBC+Driver+17+For+SQL+Server"
+#connection_str = f"mssql+pyodbc://{sqllogin}:{sqlpwd}/{database}?driver=ODBC+Driver+17+For+SQL+Server"
 
-my_connection_string = f"mssql+pyodbc://{sqllogin}:{sqlpwd}/{database}?driver=ODBC+Driver+17+For+SQL+Server"
+my_connection_string = f"mssql+pyodbc://{sqllogin}:{sqlpwd}@{sqlserver}/{database}?driver=ODBC+Driver+17+For+SQL+Server"
 
 interactive_sql_agent(my_connection_string, my_api_key)
 
