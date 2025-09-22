@@ -177,7 +177,7 @@ def interactive_sql_agent(server_connection_str, gemini_api_key):
             print(f"\nQuery successful. Results:\n{results}")
 
 # --- To use the agent ---
-
+      
 # #question = "How many customers are in the Customers table?"
 # question = "What are my top 10 customers for total sales in 1998 and parse json into rows."
 
