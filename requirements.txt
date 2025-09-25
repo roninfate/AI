@@ -5,3 +5,4 @@ pandas
 pyodbc
 sqlalchemy 
 google-generativeai
+langchain-google-genai
