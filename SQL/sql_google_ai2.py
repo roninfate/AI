@@ -56,7 +56,7 @@ def generate_sql_query(user_question, schema_info, api_key):
 
     genai.configure(api_key=api_key)
     
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model = genai.GenerativeModel('gemini-2.5-flash')
     
     prompt = f"""
     You are an AI assistant that translates natural language to T-SQL queries for a SQL Server database.
