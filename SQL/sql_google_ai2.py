@@ -23,7 +23,7 @@ def get_schema_info(connection_string):
         schema_info = "The database contains the following tables and their columns, organized by schema:\n"
         
         for schema in schemas:
-            # Skip system schemas that start with 'db_' or 'sys'
+            # Skip system schemas that start with 'sys' or schema in INFORMATION_SCHEMA, guest
             if schema.startswith('sys') or schema in ['INFORMATION_SCHEMA', 'guest']:
                 continue
                 
