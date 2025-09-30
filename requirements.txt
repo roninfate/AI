@@ -2,6 +2,8 @@ langchain
 langchain-ollama
 langchain-chroma
 pandas
+numpy
+openpyxl
 pyodbc
 sqlalchemy 
 google-generativeai
