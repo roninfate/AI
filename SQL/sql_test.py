@@ -49,7 +49,7 @@ def generate_sql_query(user_question, schema_info, api_key):
     Args:
         user_question (str): The natural language question from the user.
         schema_info (str): The string representation of the database schema.
-        api_key (str): Your Gemini API key.
+        api_key (str): Your API key.
         
     Returns:
         str: The generated SQL query.
@@ -67,7 +67,7 @@ def execute_sql_query(connection_string, query):
     Returns:
         tuple: A tuple containing the formatted results and any errors.
     """
-    # print("In execute_sql_query")
+    # There is a ` mark at the start and end of generated query.  In order to get the query to run, 
+    # the tick marks have to be removed.
     query = query.replace('`', '').replace('sql','')
 
-    
