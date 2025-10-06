@@ -40,7 +40,32 @@ def get_schema_info(connection_string):
     Returns:
         str: A formatted string of the database schema.
     """
-
+    try:
+        engine = sqlalchemy.create_engine(connection_string)
+        inspector = sqlalchemy.inspect(engine)
+        
+        # Get all schemas in the database
+        schemas = inspector.get_schema_names()
+        
+        schema_info = "The database contains the following tables and their columns, organized by schema:\n"
+        
+        for schema in schemas:
+            # Skip system schemas that start with 'sys' or schema in INFORMATION_SCHEMA, guest
+            if schema.startswith('sys') or schema in ['INFORMATION_SCHEMA', 'guest']:
+                continue
+                
+            tables = inspector.get_table_names(schema=schema)
+            if tables:
+                schema_info += f"\n--- Schema: {schema} ---\n"
+                for table in tables:
+                    schema_info += f"  - Table: {table}\n"
+                    columns = inspector.get_columns(table, schema=schema)
+                    for col in columns:
+                        schema_info += f"    - {col['name']} ({col['type']})\n"
+                
+        return schema_info
+    except Exception as e:
+        return f"Error introspecting the database: {e}"   
 
 def generate_sql_query(user_question, schema_info, api_key):
     """
