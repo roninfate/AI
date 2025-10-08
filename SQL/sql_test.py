@@ -3,21 +3,6 @@ import pyodbc
 import google.generativeai as genai
 import os
 
-
-if __name__ == "__main__":
-    print("Hello")
-
-    sqlserver = input("Enter SQL Server name:")
-    database = input("Enter database name:")
-    my_api_key=os.environ["AI_API_KEY"]
-    sqllogin = os.environ["SQLLOGIN"]
-    sqlpwd = os.environ["SQLPWD"]
-
-    my_connection_string = f"mssql+pyodbc://{sqllogin}:{sqlpwd}@{sqlserver}/{database}?driver=ODBC+Driver+17+For+SQL+Server"
-
-    interactive_sql_agent(my_connection_string, my_api_key)
-
-
 def interactive_sql_agent(server_connection_str, api_key):
     """
     Runs the agentic AI in an interactive loop, prompting the user for questions.
@@ -29,6 +14,14 @@ def interactive_sql_agent(server_connection_str, api_key):
     print("Welcome to the Interactive SQL Agent!")
     print("Type 'exit' or 'quit' to end the session.")
 
+    schema = get_schema_info(server_connection_str)
+    
+    if "Error" in schema:
+        print(f"Failed to load database schema: {schema}")
+        return
+        
+    print("Schema loaded successfully. Ready to answer your questions.")
+    
 
 def get_schema_info(connection_string):
     """
@@ -62,7 +55,9 @@ def get_schema_info(connection_string):
                     columns = inspector.get_columns(table, schema=schema)
                     for col in columns:
                         schema_info += f"    - {col['name']} ({col['type']})\n"
-                
+
+        # print(schema_info)
+
         return schema_info
     except Exception as e:
         return f"Error introspecting the database: {e}"   
@@ -95,4 +90,18 @@ def execute_sql_query(connection_string, query):
     # There is a ` mark at the start and end of generated query.  In order to get the query to run, 
     # the tick marks have to be removed.
     query = query.replace('`', '').replace('sql','')
+
+
+if __name__ == "__main__":
+    print("Hello")
+
+    sqlserver = input("Enter SQL Server name:")
+    database = input("Enter database name:")
+    my_api_key=os.environ["AI_API_KEY"]
+    sqllogin = os.environ["SQLLOGIN"]
+    sqlpwd = os.environ["SQLPWD"]
+
+    my_connection_string = f"mssql+pyodbc://{sqllogin}:{sqlpwd}@{sqlserver}/{database}?driver=ODBC+Driver+17+For+SQL+Server"
+
+    interactive_sql_agent(my_connection_string, my_api_key)
 
